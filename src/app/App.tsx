@@ -23,7 +23,7 @@ export default function App() {
             </div>
             <div>
               <h1 className="text-xl md:text-2xl font-bold text-white">Stock Returns</h1>
-              <p className="text-xs text-gray-400">Calculate comprehensive investment returns</p>
+              <p className="text-xs text-gray-400">Calculate comprehensive investment returns of indian stocks</p>
             </div>
           </div>
         </div>

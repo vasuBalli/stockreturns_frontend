@@ -26,3 +26,4 @@ jobs:
 
             sudo rm -rf /var/www/stockreturns_frontend/*
             sudo cp -r dist/* /var/www/stockreturns_frontend/
+            sudo systemctl restart nginx
