@@ -22,7 +22,7 @@ export default function App() {
               </div>
             </div>
             <div>
-              <h1 className="text-xl md:text-2xl font-bold text-white">Stock Returns Calculator</h1>
+              <h1 className="text-xl md:text-2xl font-bold text-white">Stock Returns</h1>
               <p className="text-xs text-gray-400">Calculate comprehensive investment returns</p>
             </div>
           </div>
@@ -43,7 +43,6 @@ export default function App() {
             </p>
             <div className="flex items-center gap-6 text-gray-400">
               <a href="#" className="hover:text-white transition-colors">About</a>
-              <a href="#" className="hover:text-white transition-colors">API</a>
               <a href="#" className="hover:text-white transition-colors">Contact</a>
             </div>
           </div>
