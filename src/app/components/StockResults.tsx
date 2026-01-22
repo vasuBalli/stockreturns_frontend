@@ -7,21 +7,33 @@ interface CalculationResults {
   symbol: string;
   from: string;
   to: string;
+
   initial_shares: number;
   final_shares: number;
+
   start_price: number;
   end_price: number;
+
   initial_value: number;
   final_value: number;
-  cash_balance: number;
+
+  price_gain: number;
+  price_gain_pct: number;
+
+  dividend_gain: number;
+
   total_gain: number;
-  gain_pct: number;
-  corporate_actions: Array<{
+  total_gain_pct: number;
+
+  corporate_actions: {
+    date: string;
     type: string;
-    factor?: number;
+    dividend_per_share?: number;
     cash_received?: number;
-  }>;
+    total_cash?: number;
+  }[];
 }
+
 
 interface StockResultsProps {
   results: CalculationResults;
@@ -49,8 +61,8 @@ export function StockResults({ results }: StockResultsProps) {
   const dividendActions = results.corporate_actions.filter(action => action.type === "DIVIDEND_CASH");
 
   // Calculate breakdown
-  const stockValueGain = (results.end_price * results.final_shares) - results.initial_value;
-  const cashGain = results.cash_balance;
+const stockValueGain = results.price_gain;
+  const cashGain = results.dividend_gain;
 
   // Calculate annualized return
   const startDate = new Date(results.from);
@@ -117,7 +129,7 @@ export function StockResults({ results }: StockResultsProps) {
               <div className={`px-2.5 py-1 rounded-full text-xs font-bold ${
                 isPositive ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'
               }`}>
-                {isPositive ? '+' : ''}{results.gain_pct.toFixed(1)}%
+                {isPositive ? '+' : ''}{results.total_gain_pct.toFixed(1)}%
               </div>
             </div>
             <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Total Gain</div>
@@ -143,7 +155,7 @@ export function StockResults({ results }: StockResultsProps) {
             </div>
             <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Return %</div>
             <div className={`text-2xl md:text-3xl font-bold ${isPositive ? "text-blue-400" : "text-red-400"}`}>
-              {results.gain_pct.toFixed(2)}%
+              {results.total_gain_pct.toFixed(2)}%
             </div>
           </CardContent>
         </Card>
@@ -210,7 +222,7 @@ export function StockResults({ results }: StockResultsProps) {
               { label: 'Price Change', value: `${((results.end_price - results.start_price) / results.start_price * 100).toFixed(2)}%` },
               { label: 'Initial Investment', value: `₹${results.initial_value.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` },
               { label: 'Stock Value (Final)', value: `₹${(results.end_price * results.final_shares).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` },
-              { label: 'Cash Balance', value: `₹${results.cash_balance.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` },
+              { label: 'Cash Balance', value: `₹${results.dividend_gain.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` },
             ].map((item, index) => (
               <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
                 <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">{item.label}</div>
@@ -289,7 +301,7 @@ export function StockResults({ results }: StockResultsProps) {
                     <div className="flex justify-between items-center py-3 px-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
                       <span className="text-sm font-semibold text-gray-300">Total Dividends</span>
                       <span className="text-xl font-bold text-emerald-400">
-                        ₹{results.cash_balance.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        ₹{results.dividend_gain.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                       </span>
                     </div>
                   </div>
@@ -328,7 +340,7 @@ export function StockResults({ results }: StockResultsProps) {
               </div>
             </div>
 
-            {results.cash_balance > 0 && (
+            {results.dividend_gain > 0 && (
               <div>
                 <div className="flex justify-between items-center mb-3">
                   <span className="text-sm font-semibold text-gray-300">Cash Dividends</span>
