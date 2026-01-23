@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
-import { TrendingUp, TrendingDown, DollarSign, Percent, Activity, Gift, Coins, BarChart3, PieChart } from "lucide-react";
+import { TrendingUp, TrendingDown, DollarSign, Percent, Activity, Gift, Coins, BarChart3, PieChart, IndianRupee } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { useState } from "react";
 
 interface CalculationResults {
   symbol: string;
@@ -60,6 +61,18 @@ export function StockResults({ results }: StockResultsProps) {
   const bonusActions = results.corporate_actions.filter(action => action.type === "BONUS");
   const dividendActions = results.corporate_actions.filter(action => action.type === "DIVIDEND_CASH");
 
+  const ITEMS_PER_PAGE = 5
+
+const [currentPage, setCurrentPage] = useState(1)
+
+const totalPages = Math.ceil(dividendActions.length / ITEMS_PER_PAGE)
+
+const paginatedDividends = dividendActions.slice(
+  (currentPage - 1) * ITEMS_PER_PAGE,
+  currentPage * ITEMS_PER_PAGE
+)
+
+
   // Calculate breakdown
 const stockValueGain = results.price_gain;
   const cashGain = results.dividend_gain;
@@ -110,6 +123,7 @@ const stockValueGain = results.price_gain;
                 <><TrendingDown className="h-4 w-4 mr-2" strokeWidth={2.5} /> Loss</>
               )}
             </Badge>
+            
           </div>
         </CardHeader>
       </Card>
@@ -123,7 +137,7 @@ const stockValueGain = results.price_gain;
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl blur opacity-50"></div>
                 <div className="relative flex items-center justify-center w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg">
-                  <DollarSign className="h-6 w-6 text-white" strokeWidth={2.5} />
+                  <IndianRupee className="h-6 w-6 text-white" strokeWidth={2.5} />
                 </div>
               </div>
               <div className={`px-2.5 py-1 rounded-full text-xs font-bold ${
@@ -133,9 +147,21 @@ const stockValueGain = results.price_gain;
               </div>
             </div>
             <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Total Gain</div>
-            <div className={`text-2xl md:text-3xl font-bold ${isPositive ? "text-emerald-400" : "text-red-400"}`}>
+            {/* <div className={`text-2xl md:text-3xl font-bold ${isPositive ? "text-emerald-400" : "text-red-400"}`}>
               ₹{Math.abs(results.total_gain).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+            </div> */}
+            <div
+              className={`text-2xl md:text-3xl font-bold ${
+                isPositive ? 'text-emerald-400' : 'text-red-400'
+              }`}
+                >
+              ₹ {isPositive ? '+' : '−'}
+              {Math.abs(results.total_gain).toLocaleString('en-IN', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              })}
             </div>
+
           </CardContent>
         </Card>
 
@@ -195,7 +221,7 @@ const stockValueGain = results.price_gain;
                 Now
               </div>
             </div>
-            <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Final Value</div>
+            <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Portfolio Value</div>
             <div className="text-2xl md:text-3xl font-bold text-white">
               ₹{results.final_value.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
@@ -222,7 +248,7 @@ const stockValueGain = results.price_gain;
               { label: 'Price Change', value: `${((results.end_price - results.start_price) / results.start_price * 100).toFixed(2)}%` },
               { label: 'Initial Investment', value: `₹${results.initial_value.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` },
               { label: 'Stock Value (Final)', value: `₹${(results.end_price * results.final_shares).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` },
-              { label: 'Cash Balance', value: `₹${results.dividend_gain.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` },
+              { label: 'Divident Balance', value: `₹${results.dividend_gain.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` },
             ].map((item, index) => (
               <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
                 <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">{item.label}</div>
@@ -287,7 +313,7 @@ const stockValueGain = results.price_gain;
                   Dividend Payments
                 </CardTitle>
               </CardHeader>
-              <CardContent className="relative pt-6 pb-6">
+              {/* <CardContent className="relative pt-6 pb-6">
                 <div className="space-y-3">
                   {dividendActions.map((action, index) => (
                     <div key={index} className="flex justify-between items-center py-3 px-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
@@ -306,10 +332,90 @@ const stockValueGain = results.price_gain;
                     </div>
                   </div>
                 </div>
-              </CardContent>
+                
+              </CardContent> */}
+              <CardContent className="relative pt-6 pb-6">
+  <div className="overflow-x-auto">
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="text-gray-400 uppercase text-xs tracking-wider border-b border-white/10">
+          <th className="py-3 px-4 text-left">Date</th>
+          <th className="py-3 px-4 text-left">Description</th>
+          <th className="py-3 px-4 text-right">Amount</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {paginatedDividends.map((action, index) => (
+          <tr
+            key={index}
+            className="border-b border-white/5 last:border-0 hover:bg-emerald-500/5 transition"
+          >
+            <td className="py-3 px-4 text-gray-300 whitespace-nowrap">
+              {action.date ?? '—'}
+            </td>
+
+            <td className="py-3 px-4 text-gray-300">
+              {action.description ?? `Dividend Payment #${index + 1}`}
+            </td>
+
+            <td className="py-3 px-4 text-right font-bold text-emerald-400">
+              ₹{action.cash_received?.toLocaleString('en-IN', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              })}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    {totalPages > 1 && (
+  <div className="mt-4 flex items-center justify-between text-sm text-gray-400">
+    <button
+      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+      disabled={currentPage === 1}
+      className="px-3 py-1.5 rounded-md border border-white/10 bg-white/5 
+                 disabled:opacity-40 disabled:cursor-not-allowed
+                 hover:bg-white/10 transition"
+    >
+      Prev
+    </button>
+
+    <span className="text-xs font-medium">
+      Page {currentPage} of {totalPages}
+    </span>
+
+    <button
+      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+      disabled={currentPage === totalPages}
+      className="px-3 py-1.5 rounded-md border border-white/10 bg-white/5 
+                 disabled:opacity-40 disabled:cursor-not-allowed
+                 hover:bg-white/10 transition"
+    >
+      Next
+    </button>
+  </div>
+)}
+
+  </div>
+
+  {/* Total stays highlighted */}
+  <div className="pt-4 mt-4 border-t border-white/10">
+    <div className="flex justify-between items-center py-3 px-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+      <span className="text-sm font-semibold text-gray-300">
+        Total Dividends
+      </span>
+      <span className="text-xl font-bold text-emerald-400">
+        ₹{results.dividend_gain.toLocaleString('en-IN')}
+      </span>
+    </div>
+  </div>
+</CardContent>
+
             </Card>
           )}
         </div>
+        
       )}
 
       {/* Return Breakdown */}

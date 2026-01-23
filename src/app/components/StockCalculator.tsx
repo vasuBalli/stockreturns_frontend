@@ -7,6 +7,8 @@ import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
 import { Calendar, TrendingUp, Search, Sparkles } from "lucide-react";
 import { StockResults } from "@/app/components/StockResults";
+import StockSymbolInput from '@/app/components/StockSymbolInput'
+
 
 /* ---------------- TYPES ---------------- */
 
@@ -41,6 +43,7 @@ interface CalculationResults {
 
 export function StockCalculator() {
   const [stockSymbol, setStockSymbol] = useState("");
+  const [stockName, setStockName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [shares, setShares] = useState("1");
@@ -128,7 +131,8 @@ export function StockCalculator() {
   return (
     <div className="space-y-8">
 
-      <Card className="border-0 shadow-2xl shadow-blue-500/20 bg-white/10 backdrop-blur-2xl overflow-hidden">
+      <Card className="border-0 shadow-2xl shadow-blue-500/20 bg-gradient-to-br from-emerald-500/10 via-blue-500/10 to-indigo-500/10
+ backdrop-blur-1xl overflow-hidden">
         <CardHeader className="border-b border-white/10">
           <CardTitle className="text-2xl text-white">
             Calculate Returns
@@ -144,16 +148,24 @@ export function StockCalculator() {
           <div className="grid md:grid-cols-2 gap-6">
 
             <div>
-              <Label className="text-gray-300 flex gap-2 items-center">
+              {/* <Label className="text-gray-300 flex gap-2 items-center">
                 <Search className="h-4 w-4 text-blue-400" />
                 Stock Symbol
-              </Label>
-              <Input
+              </Label> */}
+              {/* <Input
                 value={stockSymbol}
                 onChange={(e) => setStockSymbol(e.target.value.toUpperCase())}
                 placeholder="INFY, TCS, RELIANCE"
                 className="h-14 bg-white/5 text-white"
-              />
+              /> */}
+              <StockSymbolInput
+  value={stockSymbol}
+  onSelect={(stock) => {
+    setStockSymbol(stock.symbol)
+    setStockName(stock.name)
+  }}
+/>
+
             </div>
 
             <div>
